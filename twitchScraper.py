@@ -67,7 +67,7 @@ def getChannels():
 
 def collectData():
 	streamNames = getChannels()
-	answer = getMessages('summit1g')
+	answer = getMessages('tsm_bjergsen')
 	return answer
 '''
 pool = Pool()
