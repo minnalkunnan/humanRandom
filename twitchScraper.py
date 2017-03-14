@@ -1,10 +1,7 @@
 import socket
 import re
 import requests
-import urllib
 import json
-import pprint
-import time
 from multiprocessing import Pool
 
 
@@ -25,7 +22,7 @@ def getMessages(channel):
 	s.send("JOIN {}\r\n".format(CHAN))
 
 	gathers = 0
-	result = ''
+	result = 0
 	resp = s.recv(1024)
 	resp = s.recv(1024)
 	resp = s.recv(1024)
@@ -33,17 +30,17 @@ def getMessages(channel):
 		resp = s.recv(1024)
 		message = resp.split(CHAN + " :", 1)
 		if len(message) > 1:
-			result += message[1].strip()
-			print(message[1].strip())
+			result += len(message[1].strip())
+			print(len(message[1].strip()))
 			gathers += 1
-			print(gathers)
+			#print(gathers)
 	    #print(resp)
 	    #if resp == "PING :tmi.twitch.tv\r\n":
 	    #    s.send("PONG :tmi.twitch.tv\r\n")
 	    #if resp.find("hi")!=-1:
 	    #    s.send("PRIVMSG "+CHAN+" :HELLO\r\n")
 		resp = ""
-		if gathers > 400:
+		if gathers > 8:
 			break;
 
 	return result
@@ -67,10 +64,11 @@ def getChannels():
 	print(streamNames)
 	return streamNames
 
-streamNames = getChannels()
 
-answer = getMessages('summit1g')
-print(answer)
+def collectData():
+	streamNames = getChannels()
+	answer = getMessages('summit1g')
+	return answer
 '''
 pool = Pool()
 result1 = pool.apply_async(getMessages, ['summit1g'])
