@@ -1,18 +1,19 @@
 import socket
 import re
 import requests
-import threading
 import urllib
 import json
 import pprint
+import time
+from multiprocessing import Pool
+
 
 def getMessages(channel):
 	HOST = "irc.twitch.tv"
 	PORT = 6667
 	NICK = "minnalgg" #The account Name
 	PASS = "oauth:gy8eqh97aujkgae5ou3zda1mjlj59g" #http://www.twitchapps.com/tmi/
-	CHAN = channel
-
+	CHAN = '#' + channel
 	s = socket.socket()
 
 	s.connect((HOST, PORT))
@@ -23,59 +24,63 @@ def getMessages(channel):
 
 	s.send("JOIN {}\r\n".format(CHAN))
 
+	gathers = 0
+	result = ''
+	resp = s.recv(1024)
+	resp = s.recv(1024)
+	resp = s.recv(1024)
 	while True:
-	    resp = s.recv(1024)
-	    result = resp.split("beyondthesummit :", 1)
-	    if(len(result) > 1):
-	    	print result[1]
+		resp = s.recv(1024)
+		message = resp.split(CHAN + " :", 1)
+		if len(message) > 1:
+			result += message[1].strip()
+			print(message[1].strip())
+			gathers += 1
+			print(gathers)
 	    #print(resp)
 	    #if resp == "PING :tmi.twitch.tv\r\n":
 	    #    s.send("PONG :tmi.twitch.tv\r\n")
 	    #if resp.find("hi")!=-1:
 	    #    s.send("PRIVMSG "+CHAN+" :HELLO\r\n")
-	    resp = ""
+		resp = ""
+		if gathers > 400:
+			break;
+
+	return result
 
 def getChannels():
-	'''
-	url = 'https://api.twitch.tv/kraken/streams/summary'
-	req = urllib.request.Request(url)
-	req.add_header("Client-ID","oauth:gy8eqh97aujkgae5ou3zda1mjlj59g")
-	resp = urllib.request.urlopen(req)
-	data = resp.read()
-	'''
-	#url = 'https://api.twitch.tv/kraken/'
-	#r = requests.get(url)
-
 	clientid = 'a2zmbka2e087rgmw26ctch8ro6xofq'
 	oauth = 'oauth:gy8eqh97aujkgae5ou3zda1mjlj59g'
 	headers = {'Authorization':oauth, 'Client-ID':clientid}
 	r = requests.get("https://api.twitch.tv/kraken/streams/featured", headers=headers)
 
-	print(r)
-	#json =  r.json()
-	#parsed = json.loads(json)
-	#print json.dumps(parsed, indent=4, sort_keys=True)
-	#print(json.get('featured'))
-	pp = pprint.PrettyPrinter(indent=4)
-	pp.pprint(r.json())
-	#print(r.json().values())
-	
-	
-	#print(r.json().get('name'))
+	data = r.json()
 
+	numStreams = len(data.get('featured'))
 
+	i = 0
+	streamNames = []
+	while i < numStreams:
+		streamNames.append(str(data['featured'][i]['stream']['channel']['name']))
+		i += 1
 
-def worker(num):
-    """thread worker function"""
-    print 'Worker: %s' % num
-    return
+	print(streamNames)
+	return streamNames
 
-getChannels()
+streamNames = getChannels()
 
-threads = []
-for i in range(5):
-    t = threading.Thread(target=worker, args=(i,))
-    threads.append(t)
-    t.start()
-
+answer = getMessages('summit1g')
+print(answer)
+'''
+pool = Pool()
+result1 = pool.apply_async(getMessages, ['summit1g'])
+result2 = pool.apply_async(getMessages, [streamNames[1]])
+result3 = pool.apply_async(getMessages, [streamNames[2]])
+answer1 = result1.get(timeout=60)
+answer2 = result2.get(timeout=60)
+answer3 = result3.get(timeout=60)
+print("First string " + answer1)
+print("Second string " + answer2)
+print("Third string " + answer3)
+'''
 
