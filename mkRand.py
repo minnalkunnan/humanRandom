@@ -15,12 +15,19 @@ def get8bitlen(msgLen):
    return newBit
    
 def getInt(bitArr):
-   val = 0
+   char = 0
+   val = ""
    blocks = len(bitArr)
    blockSize = 32 / blocks
-   
+   j = 0
    for i in range(blocks):
-      val = val | (bitArr[i] << (i * blockSize))
+      char = char | (bitArr[i] << (j * blockSize))
+      j += 1
+      if j * blockSize == 8:
+         val = val + chr(char)
+         char = 0
+         j = 0
+         
    return val   
 
 #bitArr = [1] * 32
