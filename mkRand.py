@@ -1,17 +1,17 @@
-def get1bitlen(msg):
-   newBits = len(msg) % 2;
+def get1bitlen(msgLen):
+   newBits = msgLen % 2;
    return newBits
    
-def get2bitlen(msg):
-   newBits = len(msg) % 4;
+def get2bitlen(msgLen):
+   newBits = msgLen % 4;
    return newBits
    
-def get4bitlen(msg):
-   newBits = len(msg) % 16;
+def get4bitlen(msgLen):
+   newBits = msgLen % 16;
    return newBits
    
-def get8bitlen(msg):
-   newBit = len(msg) % 256;
+def get8bitlen(msgLen):
+   newBit = msgLen % 256;
    return newBit
    
 def getInt(bitArr):
