@@ -46,6 +46,7 @@ def getMessages(channel):
 	return result
 
 def getChannels():
+   #oauth:m05gv3mrm9zqij598juay1prztz0lb
 	clientid = 'a2zmbka2e087rgmw26ctch8ro6xofq'
 	oauth = 'oauth:gy8eqh97aujkgae5ou3zda1mjlj59g'
 	headers = {'Authorization':oauth, 'Client-ID':clientid}
